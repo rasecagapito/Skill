@@ -1,0 +1,47 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build outputs
+dist/
+build/
+*.pyc
+__pycache__/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Local project brain (never publish)
+CLAUDE.md
+Versoes/
