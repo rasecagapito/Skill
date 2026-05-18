@@ -1,158 +1,158 @@
-# 🚀 Como Subir para o GitHub
+# 🚀 How to Publish to GitHub
 
-Guia completo para publicar a skill disk-cleanup-windows no GitHub.
+Complete guide to publish the disk-cleanup-windows skill on GitHub.
 
 ---
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-1. ✅ Conta no GitHub (crie em https://github.com/signup)
-2. ✅ Git instalado no Windows
+1. ✅ GitHub account (create at https://github.com/signup)
+2. ✅ Git installed on Windows
    - Download: https://git-scm.com/download/win
-   - Verificar: `git --version` no PowerShell
-3. ✅ Estrutura do repositório pronta (você já tem!)
+   - Verify: `git --version` in PowerShell
+3. ✅ Repository structure ready (you already have it!)
 
 ---
 
-## 🎯 Passo a Passo
+## 🎯 Step by Step
 
-### 1️⃣ Criar Repositório no GitHub
+### 1️⃣ Create Repository on GitHub
 
-1. Acesse https://github.com/new
-2. Preencha:
+1. Go to https://github.com/new
+2. Fill in:
    - **Repository name:** `disk-cleanup-windows`
    - **Description:** `🧹 Diagnostic and cleanup skill for Windows corporate environments — SAP B1, n8n, SQL Server`
-   - **Visibility:** Public ✅ (para outros usarem)
-   - **Add README:** ❌ Desmarcar (já temos)
-   - **Add .gitignore:** ❌ Desmarcar (já temos)
-   - **Choose a license:** ❌ Desmarcar (já temos MIT)
-3. Clique **"Create repository"**
+   - **Visibility:** Public ✅ (so others can use it)
+   - **Add README:** ❌ Uncheck (we already have one)
+   - **Add .gitignore:** ❌ Uncheck (we already have one)
+   - **Choose a license:** ❌ Uncheck (we already have MIT)
+3. Click **"Create repository"**
 
 ---
 
-### 2️⃣ Preparar Repositório Local
+### 2️⃣ Prepare Local Repository
 
-No PowerShell (dentro do diretório do projeto):
+In PowerShell (inside the project directory):
 
 ```powershell
-# 1. Navegar até o diretório
+# 1. Navigate to directory
 cd C:\path\to\disk-cleanup-windows
 
-# 2. Inicializar Git (se ainda não foi)
+# 2. Initialize Git (if not already done)
 git init
 
-# 3. Adicionar todos os arquivos
+# 3. Add all files
 git add .
 
-# 4. Fazer primeiro commit
+# 4. First commit
 git commit -m "feat: initial release of disk-cleanup-windows skill"
 
-# 5. Renomear branch para main
+# 5. Rename branch to main
 git branch -M main
 ```
 
 ---
 
-### 3️⃣ Conectar ao GitHub
+### 3️⃣ Connect to GitHub
 
 ```powershell
-# Substituir USERNAME pelo seu usuário do GitHub
+# Replace USERNAME with your GitHub username
 git remote add origin https://github.com/USERNAME/disk-cleanup-windows.git
 
-# Verificar se conectou
+# Verify connection
 git remote -v
 ```
 
-**Exemplo:**
+**Example:**
 ```powershell
 git remote add origin https://github.com/rasecagapito/disk-cleanup-windows.git
 ```
 
 ---
 
-### 4️⃣ Subir para o GitHub
+### 4️⃣ Push to GitHub
 
 ```powershell
-# Push inicial (primeira vez)
+# Initial push
 git push -u origin main
 ```
 
-**Vai pedir autenticação:**
-- **Username:** seu usuário do GitHub
-- **Password:** **Personal Access Token** (não a senha da conta)
+**Authentication required:**
+- **Username:** your GitHub username
+- **Password:** **Personal Access Token** (not your account password)
 
-#### 🔑 Como Gerar Personal Access Token:
+#### 🔑 How to Generate a Personal Access Token:
 
 1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. **Generate new token (classic)**
 3. **Note:** `disk-cleanup-windows upload`
-4. **Expiration:** 90 days (ou o que preferir)
-5. **Scopes:** Marcar `repo` (todos os sub-itens)
-6. **Generate token** → Copiar o token (guarde bem!)
-7. Usar esse token como senha no git push
+4. **Expiration:** 90 days (or your preference)
+5. **Scopes:** Check `repo` (all sub-items)
+6. **Generate token** → Copy the token (save it securely!)
+7. Use this token as password when running git push
 
 ---
 
-### 5️⃣ Verificar no GitHub
+### 5️⃣ Verify on GitHub
 
-Acesse: `https://github.com/USERNAME/disk-cleanup-windows`
+Go to: `https://github.com/USERNAME/disk-cleanup-windows`
 
-Você deve ver:
-- ✅ README.md renderizado
-- ✅ Todos os arquivos listados
-- ✅ Licença MIT reconhecida
-- ✅ Badges no topo (stars, commits, license)
+You should see:
+- ✅ README.md rendered
+- ✅ All files listed
+- ✅ MIT license recognized
+- ✅ Badges at the top (stars, commits, license)
 
 ---
 
-## 📝 Commits Futuros
+## 📝 Future Commits
 
-Quando fizer mudanças:
+When making changes:
 
 ```powershell
-# 1. Ver o que mudou
+# 1. See what changed
 git status
 
-# 2. Adicionar mudanças
+# 2. Add changes
 git add .
 
-# 3. Fazer commit com mensagem descritiva
+# 3. Commit with descriptive message
 git commit -m "feat: add support for Oracle database logs"
 
-# 4. Subir para GitHub
+# 4. Push to GitHub
 git push
 ```
 
 ---
 
-## 🎨 Melhorias Opcionais
+## 🎨 Optional Improvements
 
-### 1. Adicionar Banner/Logo
+### 1. Add Banner/Logo
 
-Crie um banner e coloque em `/docs/banner.png`:
+Create a banner and place it in `/docs/banner.png`:
 
 ```markdown
-# No README.md (topo)
+# In README.md (top)
 ![disk-cleanup-windows](docs/banner.png)
 ```
 
-### 2. Adicionar GIF Demonstrativo
+### 2. Add Demo GIF
 
-Grave um GIF mostrando o uso:
-- Use **ScreenToGif** (gratuito): https://www.screentogif.com/
-- Grave: trigger da skill → diagnóstico → script gerado
-- Salve em `/docs/demo.gif`
+Record a GIF showing usage:
+- Use **ScreenToGif** (free): https://www.screentogif.com/
+- Record: skill trigger → diagnosis → generated script
+- Save to `/docs/demo.gif`
 
 ```markdown
-# No README.md
+# In README.md
 ![Demo](docs/demo.gif)
 ```
 
-### 3. Configurar GitHub Topics
+### 3. Configure GitHub Topics
 
-No repositório GitHub:
-1. Clique em ⚙️ (Settings)
-2. Adicionar topics:
+In the GitHub repository:
+1. Click ⚙️ (Settings icon next to About)
+2. Add topics:
    - `claude-skill`
    - `windows-cleanup`
    - `disk-space`
@@ -160,7 +160,7 @@ No repositório GitHub:
    - `powershell`
    - `automation`
 
-### 4. Habilitar GitHub Pages (Documentação)
+### 4. Enable GitHub Pages (Documentation)
 
 1. Settings → Pages
 2. Source: Deploy from branch
@@ -169,110 +169,112 @@ No repositório GitHub:
 
 ---
 
-## 🌟 Promover o Repositório
+## 🌟 Promote the Repository
 
-### 1. Compartilhar
+### 1. Share
 
-- LinkedIn (tag: #WindowsAutomation #Claude #SAP)
+- LinkedIn (tags: #WindowsAutomation #Claude #SAP)
 - Twitter/X (tag: @AnthropicAI)
-- Reddit: r/PowerShell, r/sysadmin
-- Dev.to (escrever artigo)
+- Reddit: r/PowerShell, r/sysadmin, r/ClaudeAI
+- Dev.to (write an article)
 
-### 2. Adicionar ao Claude Skills Registry
+### 2. Add to Claude Skills Registry
 
-Se existir um registry oficial, submeter lá.
+If an official registry exists, submit your skill there.
 
 ### 3. README Badges
 
-Adicionar mais badges no README:
+Add more badges to README:
 
 ```markdown
-[![Stars](https://img.shields.io/github/stars/rasecagapito/disk-cleanup-windows?style=flat&color=yellow)](https://github.com/rasecagapito/disk-cleanup-windows/stargazers)
-[![Issues](https://img.shields.io/github/issues/rasecagapito/disk-cleanup-windows?style=flat)](https://github.com/rasecagapito/disk-cleanup-windows/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/rasecagapito/disk-cleanup-windows?style=flat)](https://github.com/rasecagapito/disk-cleanup-windows/pulls)
+[![Stars](https://img.shields.io/github/stars/rasecagapito/Skill?style=flat&color=yellow)](https://github.com/rasecagapito/Skill/stargazers)
+[![Issues](https://img.shields.io/github/issues/rasecagapito/Skill?style=flat)](https://github.com/rasecagapito/Skill/issues)
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Erro: "fatal: remote origin already exists"
+### Error: "fatal: remote origin already exists"
 
 ```powershell
 git remote remove origin
 git remote add origin https://github.com/USERNAME/disk-cleanup-windows.git
 ```
 
-### Erro: "Permission denied"
+### Error: "Permission denied"
 
-Verifique:
-1. Token tem permissão `repo`
-2. Usando token (não senha) no push
-3. Username está correto
+Check:
+1. Token has `repo` permission
+2. Using token (not password) on push
+3. Username is correct
 
-### Erro: "Updates were rejected"
+### Error: "Updates were rejected"
 
 ```powershell
-# Forçar push (CUIDADO: sobrescreve remoto)
-git push -f origin main
+# Pull remote changes first
+git pull origin main --rebase
+
+# Then push
+git push origin main
 ```
 
-### Erro: "Symlinks não funcionam"
+### Error: "Symlinks not working"
 
-No Windows, symlinks precisam de permissões especiais:
+On Windows, symlinks require special permissions:
 
 ```powershell
-# Converter symlinks em arquivos reais
+# Convert symlinks to real files
 git config core.symlinks false
 git reset --hard
 ```
 
-Ou use `--copy` no npx skills add.
+Or use `--copy` with npx skills add.
 
 ---
 
-## 📊 Estatísticas (Opcional)
+## 📊 Stats (Optional)
 
-Adicionar ao README análises de uso:
+Add usage analytics to README:
 
 ```markdown
 ## Stats
 
-[![Star History Chart](https://api.star-history.com/svg?repos=rasecagapito/disk-cleanup-windows&type=Date)](https://star-history.com/#rasecagapito/disk-cleanup-windows&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=rasecagapito/Skill&type=Date)](https://star-history.com/#rasecagapito/Skill&Date)
 ```
 
 ---
 
-## ✅ Checklist Final
+## ✅ Final Checklist
 
-Antes de divulgar publicamente:
+Before public announcement:
 
-- [ ] README completo e bem formatado
-- [ ] LICENSE presente (MIT)
-- [ ] CONTRIBUTING.md para colaboradores
-- [ ] Examples com scripts reais
-- [ ] .gitignore configurado
-- [ ] Commits com mensagens claras
-- [ ] GitHub Topics configurados
-- [ ] README testado (badges funcionando)
-- [ ] Instalação testada em agente limpo
-- [ ] Documentação em inglês (opcional, mas recomendado)
-
----
-
-## 🎉 Pronto!
-
-Seu repositório está no GitHub! 🚀
-
-**Próximos passos:**
-1. Compartilhar no LinkedIn/Twitter
-2. Pedir para colegas testarem
-3. Coletar feedback via Issues
-4. Iterar e melhorar
+- [ ] README complete and well formatted
+- [ ] LICENSE present (MIT)
+- [ ] CONTRIBUTING.md for collaborators
+- [ ] Examples with real scripts
+- [ ] .gitignore configured
+- [ ] Commits with clear messages
+- [ ] GitHub Topics configured
+- [ ] README tested (badges working)
+- [ ] Installation tested on clean agent
+- [ ] Documentation in English ✅
 
 ---
 
-**URL do seu repo:**
-`https://github.com/USERNAME/disk-cleanup-windows`
+## 🎉 Done!
 
-**Compartilhe com o mundo!** 🌍
+Your repository is on GitHub! 🚀
+
+**Next steps:**
+1. Share on LinkedIn/Twitter
+2. Ask colleagues to test it
+3. Collect feedback via Issues
+4. Iterate and improve
+
+---
+
+**Your repo URL:**
+`https://github.com/rasecagapito/Skill/tree/disk-cleanup-windows`
+
+**Share it with the world!** 🌍

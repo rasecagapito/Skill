@@ -1,82 +1,82 @@
 ---
 name: disk-cleanup-windows
 description: >
-  Skill para diagnóstico e limpeza de disco em Windows corporativo, especialmente
-  ambientes com SAP Business One, n8n, SQL Server e ferramentas de TI. Use esta
-  skill sempre que o usuário mencionar: falta de espaço em disco, HD cheio, disco
-  lotado, pouco espaço no C:, limpeza de disco, disco quase cheio, liberar espaço,
-  ou qualquer variação. Também use quando o usuário pedir para "limpar o computador",
-  "deixar o PC mais rápido" ou "remover arquivos desnecessários". Esta skill guia
-  todo o processo: diagnóstico visual com WinDirStat, identificação dos vilões,
-  geração de script PowerShell personalizado e execução segura passo a passo.
+  Skill for disk diagnosis and cleanup on corporate Windows environments, especially
+  machines running SAP Business One, n8n, SQL Server, and IT tools. Use this skill
+  whenever the user mentions: low disk space, full hard drive, C: drive almost full,
+  disk cleanup, free up space, or any variation. Also use when the user asks to
+  "clean the computer", "make the PC faster", or "remove unnecessary files". This
+  skill guides the entire process: visual diagnosis with WinDirStat, villain
+  identification, personalized PowerShell script generation, and safe step-by-step
+  execution.
 ---
 
-# Disk Cleanup Windows — Skill de Limpeza de Disco
+# Disk Cleanup Windows — Disk Cleanup Skill
 
-## Visão Geral
+## Overview
 
-Esta skill guia o diagnóstico completo e limpeza segura de disco em ambientes
-Windows corporativos, com foco especial em máquinas que rodam SAP Business One,
-n8n, SQL Server, Chrome, Teams e ferramentas de desenvolvimento.
-
----
-
-## Fluxo de Trabalho
-
-### ETAPA 1 — Diagnóstico Inicial
-
-Peça ao usuário uma print das propriedades do disco:
-- `Win + E` → clique direito no disco C: → Propriedades
-
-Avalie a situação:
-- **< 10% livre** → Crítico 🔴 — agir imediatamente
-- **10–20% livre** → Alerta 🟡 — limpeza recomendada
-- **> 20% livre** → Saudável 🟢
+This skill guides complete diagnosis and safe disk cleanup in corporate Windows
+environments, with special focus on machines running SAP Business One, n8n,
+SQL Server, Chrome, Teams, and development tools.
 
 ---
 
-### ETAPA 2 — Limpeza Rápida do Windows
+## Workflow
 
-Antes de investigar mais fundo, execute a limpeza nativa:
+### STEP 1 — Initial Diagnosis
+
+Ask the user for a screenshot of disk properties:
+- `Win + E` → right-click on C: drive → Properties
+
+Evaluate the situation:
+- **< 10% free** → Critical 🔴 — act immediately
+- **10–20% free** → Warning 🟡 — cleanup recommended
+- **> 20% free** → Healthy 🟢
+
+---
+
+### STEP 2 — Quick Windows Cleanup
+
+Before investigating further, run native cleanup:
 
 1. `Win + R` → `cleanmgr` → Enter
-2. Clique em **"Limpar arquivos do sistema"** (não apenas OK — esse botão libera muito mais)
-3. Marque tudo e confirme
+2. Click **"Clean up system files"** (not just OK — this button frees much more)
+3. Check everything and confirm
 
-> ⚠️ A limpeza padrão libera pouco (~90 MB). O botão "Limpar arquivos do sistema" pode liberar 5–15 GB.
+> ⚠️ Standard cleanup frees little (~90 MB). The "Clean up system files" button can free 5–15 GB.
 
 ---
 
-### ETAPA 3 — Diagnóstico Profundo com WinDirStat
+### STEP 3 — Deep Diagnosis with WinDirStat
 
-Instale o WinDirStat (gratuito, open source, seguro):
+Install WinDirStat (free, open source, safe):
 👉 https://windirstat.net/download.html
 
-Configuração recomendada:
-- Abrir como **Administrador**
-- Selecionar **apenas disco C:** (Discos Individuais)
-- Marcar **"Usar varredura acelerada"**
-- **NÃO** marcar "Procurar ficheiros duplicados" (lento)
+Recommended configuration:
+- Open as **Administrator**
+- Select **C: drive only** (Individual Drives)
+- Check **"Use accelerated scan"**
+- **Do NOT** check "Find duplicate files" (slow)
 
-Após a varredura, peça print da tela principal com a árvore expandida.
+After scanning, ask for a screenshot of the main screen with the expanded tree.
 
 ---
 
-### ETAPA 4 — Análise do CSV (opcional, mais detalhado)
+### STEP 4 — CSV Analysis (optional, more detailed)
 
-Se o usuário exportar o CSV do WinDirStat (`Arquivo > Salvar como CSV`):
+If the user exports WinDirStat CSV (`File > Save as CSV`):
 
 ```python
 import csv
 
 rows = []
-with open('resultado.csv', encoding='utf-8-sig', errors='ignore') as f:
+with open('result.csv', encoding='utf-8-sig', errors='ignore') as f:
     reader = csv.DictReader(f)
     for row in reader:
         try:
-            size = int(row['Tamanho Físico'])
-            if size > 500_000_000:  # maior que 500MB
-                rows.append((row['Nome'], size))
+            size = int(row['Physical Size'])
+            if size > 500_000_000:  # larger than 500MB
+                rows.append((row['Name'], size))
         except:
             pass
 
@@ -88,225 +88,225 @@ for name, size in rows[:40]:
 
 ---
 
-### ETAPA 5 — Identificação dos Vilões Comuns
+### STEP 5 — Identifying Common Villains
 
-#### 🔴 Alta Prioridade (deletar com segurança)
+#### 🔴 High Priority (safe to delete)
 
-| Caminho | Tipo | Tamanho Típico |
-|---------|------|----------------|
+| Path | Type | Typical Size |
+|------|------|--------------|
 | `C:\Windows\ServiceProfiles\LocalService\AppData\Local\Temp\*.dmp` | Crash dumps | 10–40 GB |
-| `C:\Windows\Temp\*` | Temp do sistema | 1–5 GB |
-| `%TEMP%\*` | Temp do usuário | 1–3 GB |
+| `C:\Windows\Temp\*` | System temp | 1–5 GB |
+| `%TEMP%\*` | User temp | 1–3 GB |
 | `C:\Windows\SoftwareDistribution\Download\*` | Windows Update | 2–10 GB |
-| `C:\hiberfil.sys` | Hibernação | 4–8 GB |
+| `C:\hiberfil.sys` | Hibernation | 4–8 GB |
 
-#### 🟡 Média Prioridade (avaliar antes de limpar)
+#### 🟡 Medium Priority (evaluate before cleaning)
 
-| Caminho | Tipo | Observação |
-|---------|------|------------|
-| `%LOCALAPPDATA%\Google\Chrome\User Data\*\Cache` | Cache Chrome | Pode ser > 15 GB |
-| `%LOCALAPPDATA%\Google\Chrome\User Data\*\IndexedDB` | IndexedDB Chrome | Clipchamp pode ter 10+ GB |
-| `%APPDATA%\Microsoft\Teams\Cache` | Cache Teams | 1–5 GB |
-| `%LOCALAPPDATA%\Packages\Claude_*\LocalCache` | Cache Claude Desktop | Pode ter 10+ GB |
-| `%LOCALAPPDATA%\Google\DriveFS\*` | Cache Google Drive | 50–500 MB (modo streaming) |
-| `%LOCALAPPDATA%\Google\Drive\*` | Cache Google Drive (antigo) | 100–1000 MB |
-| `%PROGRAMDATA%\Google\DriveFS\*` | Logs Google Drive | 10–100 MB |
+| Path | Type | Notes |
+|------|------|-------|
+| `%LOCALAPPDATA%\Google\Chrome\User Data\*\Cache` | Chrome cache | Can exceed 15 GB |
+| `%LOCALAPPDATA%\Google\Chrome\User Data\*\IndexedDB` | Chrome IndexedDB | Clipchamp can have 10+ GB |
+| `%APPDATA%\Microsoft\Teams\Cache` | Teams cache | 1–5 GB |
+| `%LOCALAPPDATA%\Packages\Claude_*\LocalCache` | Claude Desktop cache | Can have 10+ GB |
+| `%LOCALAPPDATA%\Google\DriveFS\*` | Google Drive cache | 50–500 MB (streaming mode) |
+| `%LOCALAPPDATA%\Google\Drive\*` | Google Drive cache (old) | 100–1000 MB |
+| `%PROGRAMDATA%\Google\DriveFS\*` | Google Drive logs | 10–100 MB |
 
-#### 🔵 Ambiente SAP / SQL Server
+#### 🔵 SAP / SQL Server Environment
 
-| Caminho | Tipo | Observação |
-|---------|------|------------|
-| `C:\Program Files\Microsoft SQL Server\*\MSSQL\Backup\*.bak` | Backups SQL | Podem acumular GBs |
-| `C:\Program Files\SAP\SAP Business One\*\Log` | Logs SAP B1 | Verificar periodicidade |
-| Attachments do SAP B1 | Anexos | Mover para disco N: |
+| Path | Type | Notes |
+|------|------|-------|
+| `C:\Program Files\Microsoft SQL Server\*\MSSQL\Backup\*.bak` | SQL backups | Can accumulate GBs |
+| `C:\Program Files\SAP\SAP Business One\*\Log` | SAP B1 logs | Check periodicity |
+| SAP B1 Attachments | Attachments | Move to secondary disk |
 
-#### 🟣 Ambiente de Desenvolvimento
+#### 🟣 Development Environment
 
-| Caminho | Tipo | Observação |
-|---------|------|------------|
-| `%USERPROFILE%\.n8n\logs\` | Logs n8n | Deletar com segurança |
-| `%USERPROFILE%\.n8n\database.sqlite` | BD n8n | Não deletar, apenas monitorar |
-| `%USERPROFILE%\.conda\pkgs\cache` | Cache Conda | Limpar com `conda clean --all` |
+| Path | Type | Notes |
+|------|------|-------|
+| `%USERPROFILE%\.n8n\logs\` | n8n logs | Safe to delete |
+| `%USERPROFILE%\.n8n\database.sqlite` | n8n DB | Do NOT delete, monitor only |
+| `%USERPROFILE%\.conda\pkgs\cache` | Conda cache | Clean with `conda clean --all` |
 
 ---
 
-### ETAPA 6 — Geração do Script de Limpeza
+### STEP 6 — Cleanup Script Generation
 
-Gere um script PowerShell personalizado baseado nos achados. O script deve:
+Generate a personalized PowerShell script based on findings. The script must:
 
-1. Medir o espaço **antes** de cada limpeza
-2. Executar a limpeza
-3. Medir o espaço **depois**
-4. Reportar quanto foi liberado em cada etapa
-5. Exibir total no final
+1. Measure space **before** each cleanup
+2. Execute cleanup
+3. Measure space **after**
+4. Report how much was freed at each step
+5. Display total at the end
 
-#### ⚠️ CRÍTICO: Encoding de Caracteres Especiais
+#### ⚠️ CRITICAL: Special Character Encoding
 
-**PROBLEMA COMUM:** PowerShell no Windows pode falhar ao interpretar acentos e caracteres especiais em scripts salvos como UTF-8, gerando erros do tipo:
+**COMMON PROBLEM:** PowerShell on Windows can fail to interpret accents and special characters in scripts saved as UTF-8, generating errors such as:
 ```
-Argumento ausente na lista de parâmetros
-Token inesperado na expressão
-A cadeia de caracteres não tem o terminador
+Missing argument in parameter list
+Unexpected token in expression
+String has no terminator
 ```
 
-**SOLUÇÃO:** Remover TODOS os acentos e caracteres especiais do script:
+**SOLUTION:** Remove ALL accents and special characters from scripts:
 
-❌ **NÃO USE:**
-- `política`, `automática`, `espaço`, `crítico`, `relatório`
-- Aspas curvas `""` (do Word/Google Docs)
+❌ **DO NOT USE:**
+- Characters with accents: `é`, `ã`, `ç`, `ó`, `ú`, `â`
+- Curly quotes `""` (from Word/Google Docs)
 
 ✅ **USE:**
-- `politica`, `automatica`, `espaco`, `critico`, `relatorio`
-- Aspas retas `""` (do teclado)
+- ASCII-only characters in all strings and comments
+- Straight quotes `""` (from keyboard)
 
-**Regras de encoding:**
-1. Scripts devem ser salvos como **UTF-8 sem BOM** ou **ASCII puro**
-2. Comentários e mensagens ao usuário: **sem acentos**
-3. Nomes de variáveis: **sempre em inglês**
-4. Caminhos Windows: usar **barras invertidas simples** `\`
+**Encoding rules:**
+1. Scripts must be saved as **UTF-8 without BOM** or **pure ASCII**
+2. Comments and user messages: **no accents**
+3. Variable names: **always in English**
+4. Windows paths: use **single backslashes** `\`
 
-**Template base do script:**
+**Base script template:**
 
 ```powershell
-# Execute como Administrador
-# IMPORTANTE: Script SEM acentos para evitar erros de encoding
+# Run as Administrator
+# IMPORTANT: Script WITHOUT accents to avoid encoding errors
 
-$totalLiberado = 0
+$totalFreed = 0
 
-function Limpar-Pasta($caminho, $descricao) {
-    if (Test-Path $caminho) {
-        Write-Host "Limpando: $descricao" -ForegroundColor Cyan
-        
-        $antes = (Get-ChildItem $caminho -Recurse -ErrorAction SilentlyContinue | 
-                  Measure-Object Length -Sum).Sum
-        
-        Remove-Item "$caminho\*" -Recurse -Force -ErrorAction SilentlyContinue
-        
-        $depois = (Get-ChildItem $caminho -Recurse -ErrorAction SilentlyContinue | 
+function Clean-Folder($path, $description) {
+    if (Test-Path $path) {
+        Write-Host "Cleaning: $description" -ForegroundColor Cyan
+
+        $before = (Get-ChildItem $path -Recurse -ErrorAction SilentlyContinue |
                    Measure-Object Length -Sum).Sum
-        
-        $liberado = [math]::Round(($antes - $depois) / 1GB, 2)
-        
-        Write-Host "[OK] $descricao : liberou $liberado GB" -ForegroundColor Green
-        $script:totalLiberado += $liberado
-        
-        return $liberado
+
+        Remove-Item "$path\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+        $after = (Get-ChildItem $path -Recurse -ErrorAction SilentlyContinue |
+                  Measure-Object Length -Sum).Sum
+
+        $freed = [math]::Round(($before - $after) / 1GB, 2)
+
+        Write-Host "[OK] $description : freed $freed GB" -ForegroundColor Green
+        $script:totalFreed += $freed
+
+        return $freed
     } else {
-        Write-Host "[!] Caminho nao encontrado: $caminho" -ForegroundColor Yellow
+        Write-Host "[!] Path not found: $path" -ForegroundColor Yellow
     }
     return 0
 }
 
-# Exemplo de uso - adicionar chamadas conforme os viloes identificados:
-# Limpar-Pasta "C:\Windows\Temp" "Temp do Windows"
-# Limpar-Pasta "$env:TEMP" "Temp do usuario"
-# Limpar-Pasta "C:\Users\Seidor\AppData\Local\Packages\Claude_*\LocalCache" "Cache do Claude"
+# Example usage - add calls based on identified villains:
+# Clean-Folder "C:\Windows\Temp" "Windows Temp"
+# Clean-Folder "$env:TEMP" "User Temp"
+# Clean-Folder "$env:LOCALAPPDATA\Packages\Claude_*\LocalCache" "Claude Desktop Cache"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "TOTAL LIBERADO: $totalLiberado GB" -ForegroundColor Green
+Write-Host "TOTAL FREED: $totalFreed GB" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 ```
 
 ---
 
-### ETAPA 7 — Execução do Script
+### STEP 7 — Script Execution
 
-Instruções para o usuário:
+Instructions for the user:
 
 ```powershell
-# 1. Fechar Chrome, Teams e Claude Desktop antes de rodar
+# 1. Close Chrome, Teams and Claude Desktop before running
 
-# 2. Abrir PowerShell como Administrador
+# 2. Open PowerShell as Administrator
 
-# 3. Permitir execução do script
+# 3. Allow script execution
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-# Responder: S (Sim)
+# Answer: Y (Yes)
 
-# 4. Navegar até onde está o script
-cd C:\Users\USUARIO\Desktop
+# 4. Navigate to script location
+cd C:\Users\USERNAME\Desktop
 
-# 5. Executar
-.\NomeDoScript.ps1
+# 5. Execute
+.\ScriptName.ps1
 ```
 
-#### Troubleshooting — Erros de Encoding
+#### Troubleshooting — Encoding Errors
 
-Se o script falhar com erros como:
+If the script fails with errors like:
 ```
-Argumento ausente na lista de parâmetros
-Token inesperado na expressão
+Missing argument in parameter list
+Unexpected token in expression
 ```
 
-**Causa:** Script contém acentos ou caracteres especiais.
+**Cause:** Script contains accents or special characters.
 
-**Solução rápida:**
-1. Gerar nova versão do script **sem acentos**
-2. Substituir o arquivo e executar novamente
+**Quick fix:**
+1. Generate new version of script **without accents**
+2. Replace the file and run again
 
-**Verificação de encoding:**
+**Encoding check:**
 ```powershell
-# Ver encoding do arquivo (no PowerShell)
+# Check file encoding (in PowerShell)
 Get-Content .\script.ps1 -Encoding UTF8 | Select-Object -First 5
 ```
 
 ---
 
-### ETAPA 8 — Pós-limpeza e Recomendações
+### STEP 8 — Post-Cleanup and Recommendations
 
-Após a limpeza, verificar resultado e recomendar:
+After cleanup, verify results and recommend:
 
-1. **Reiniciar o PC** para consolidar as mudanças
-2. **Mover dados para disco secundário** se disponível (ex: N: com espaço livre)
-3. **Configurar limpeza automática do n8n:**
-   - No painel n8n: Settings → Executions → definir limite de retenção
-4. **Backups SAP:** mover `.bak` antigos para disco N:
-5. **Google Drive:** verificar modo streaming e limpar cache periodicamente
-6. **Agendar manutenção mensal:** rodar o script periodicamente
+1. **Restart the PC** to consolidate changes
+2. **Move data to secondary disk** if available (e.g., D: or N: with free space)
+3. **Configure n8n automatic cleanup:**
+   - In n8n panel: Settings → Executions → set retention limit
+4. **SQL Backups:** move old `.bak` files to secondary disk
+5. **Google Drive:** verify streaming mode and clean cache periodically
+6. **Schedule monthly maintenance:** run script periodically
 
 ---
 
-## Google Drive — Otimização e Limpeza
+## Google Drive — Optimization and Cleanup
 
-### Modo Streaming (Recomendado)
+### Streaming Mode (Recommended)
 
-O Google Drive tem dois modos de sincronização:
+Google Drive has two sync modes:
 
-1. **Streaming (mais leve)** ⭐ — arquivos só na nuvem
-   - Espaço local: ~100-500 MB (apenas metadados)
-   - Acesso: online, baixa sob demanda
-   - **Ideal para:** discos com pouco espaço
+1. **Streaming (lighter)** ⭐ — files only in cloud
+   - Local space: ~100-500 MB (metadata only)
+   - Access: online, downloaded on demand
+   - **Ideal for:** low-space drives
 
-2. **Espelhamento (pesado)** — tudo sincronizado localmente
-   - Espaço local: 100% do tamanho do Drive
-   - Acesso: offline completo
-   - **Ideal para:** discos com muito espaço
+2. **Mirroring (heavier)** — everything synced locally
+   - Local space: 100% of Drive size
+   - Access: full offline
+   - **Ideal for:** drives with plenty of space
 
-**Verificar modo atual:**
-1. Clicar no ícone do Google Drive na bandeja
-2. Engrenagem → Preferências
-3. Ver "Opções de sincronização de Meu Drive"
+**Check current mode:**
+1. Click Google Drive icon in system tray
+2. Gear → Preferences
+3. See "My Drive sync options"
 
-### Limpeza de Cache do Google Drive
+### Google Drive Cache Cleanup
 
-**Quando limpar:**
-- ⏰ 1x por mês (manutenção)
-- 🔴 Quando disco estiver <10% livre
-- 🐛 Se Drive estiver lento ou com erros
+**When to clean:**
+- ⏰ Once a month (maintenance)
+- 🔴 When disk is < 10% free
+- 🐛 If Drive is slow or showing errors
 
-**Script de limpeza (sem acentos):**
+**Cleanup script (no accents):**
 
 ```powershell
-# Executar como Administrador
-# Fechar Google Drive temporariamente
+# Run as Administrator
+# Close Google Drive temporarily
 
-Write-Host "Parando Google Drive..." -ForegroundColor Yellow
+Write-Host "Stopping Google Drive..." -ForegroundColor Yellow
 Stop-Process -Name "GoogleDriveFS" -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 3
 
-Write-Host "Limpando cache..." -ForegroundColor Yellow
+Write-Host "Cleaning cache..." -ForegroundColor Yellow
 
-# Caminhos de cache
+# Cache paths
 $paths = @(
     "$env:LOCALAPPDATA\Google\DriveFS",
     "$env:LOCALAPPDATA\Google\Drive",
@@ -316,140 +316,122 @@ $paths = @(
 $totalFreed = 0
 foreach ($path in $paths) {
     if (Test-Path $path) {
-        $before = (Get-ChildItem -Path $path -Recurse -File -ErrorAction SilentlyContinue | 
+        $before = (Get-ChildItem -Path $path -Recurse -File -ErrorAction SilentlyContinue |
                    Measure-Object Length -Sum).Sum / 1MB
-        
-        # Limpar apenas cache/temp/logs (manter estrutura)
+
+        # Clean only cache/temp/logs (preserve structure)
         Remove-Item "$path\Cache" -Recurse -Force -ErrorAction SilentlyContinue
         Remove-Item "$path\Temp" -Recurse -Force -ErrorAction SilentlyContinue
         Remove-Item "$path\Logs" -Recurse -Force -ErrorAction SilentlyContinue
         Remove-Item "$path\*.log" -Force -ErrorAction SilentlyContinue
         Remove-Item "$path\*.tmp" -Force -ErrorAction SilentlyContinue
-        
-        $after = (Get-ChildItem -Path $path -Recurse -File -ErrorAction SilentlyContinue | 
+
+        $after = (Get-ChildItem -Path $path -Recurse -File -ErrorAction SilentlyContinue |
                   Measure-Object Length -Sum).Sum / 1MB
-        
+
         $freed = [math]::Round($before - $after, 2)
         $totalFreed += $freed
-        
-        Write-Host "Liberado $freed MB em $path" -ForegroundColor Green
+
+        Write-Host "Freed $freed MB in $path" -ForegroundColor Green
     }
 }
 
-Write-Host "Total liberado: $totalFreed MB" -ForegroundColor Green
+Write-Host "Total freed: $totalFreed MB" -ForegroundColor Green
 
-# Reiniciar Google Drive
-Write-Host "Reiniciando Google Drive..." -ForegroundColor Yellow
+# Restart Google Drive
+Write-Host "Restarting Google Drive..." -ForegroundColor Yellow
 Start-Process "C:\Program Files\Google\Drive File Stream\GoogleDriveFS.exe"
-Write-Host "Google Drive reiniciado!" -ForegroundColor Green
+Write-Host "Google Drive restarted!" -ForegroundColor Green
 ```
 
-**Observações:**
-- ✅ Configuração de streaming mantida
-- ✅ Arquivos na nuvem seguros
-- ✅ Cache será reconstruído conforme uso
-- ⚠️ Arquivos recentes podem levar alguns segundos para abrir novamente
+**Notes:**
+- ✅ Streaming configuration preserved
+- ✅ Cloud files safe
+- ✅ Cache will rebuild as needed
+- ⚠️ Recent files may take a few seconds to open again
 
-### Configuração de Pastas Offline (Opcional)
+### Offline Folder Configuration (Optional)
 
-Se precisar trabalhar sem internet em pastas específicas:
+If you need to work offline on specific folders:
 
-1. Clicar no ícone do Google Drive → Preferências
-2. Clicar em "Como?" (link azul)
-3. Selecionar pastas específicas
-4. Marcar "Disponível offline"
+1. Click Google Drive icon → Preferences
+2. Click "How?" (blue link)
+3. Select specific folders
+4. Check "Available offline"
 
-**Estratégia recomendada:**
+**Recommended strategy:**
 ```
-📁 Meu Drive
-  ├─ 2026-Trabalho-Atual       ← Offline (sempre baixado)
-  ├─ 2025-Projetos-Anteriores  ← Online (streaming)
-  ├─ Backup-Historico          ← Online (streaming)
-  └─ Pessoal                   ← Online (streaming)
+📁 My Drive
+  ├─ 2026-Current-Work         ← Offline (always downloaded)
+  ├─ 2025-Previous-Projects    ← Online (streaming)
+  ├─ Backup-History            ← Online (streaming)
+  └─ Personal                  ← Online (streaming)
 ```
 
 ---
 
-## Referências Rápidas
+## Quick Reference
 
-### Comandos PowerShell Úteis
+### Useful PowerShell Commands
 
 ```powershell
-# Listar pastas mais pesadas (top 25)
+# List heaviest folders (top 25)
 Get-ChildItem C:\ -Recurse -ErrorAction SilentlyContinue |
   Group-Object DirectoryName |
   Sort-Object { ($_.Group | Measure-Object Length -Sum).Sum } -Descending |
   Select-Object -First 25 Name, @{N="GB";E={[math]::Round(($_.Group |
   Measure-Object Length -Sum).Sum/1GB,2)}} | Format-Table -AutoSize
 
-# Encontrar todos os .dmp
+# Find all .dmp files
 Get-ChildItem C:\ -Recurse -Filter "*.dmp" -ErrorAction SilentlyContinue |
   Select-Object FullName, @{N="GB";E={[math]::Round($_.Length/1GB,2)}} |
   Sort-Object GB -Descending
 
-# Encontrar backups SQL
-Get-ChildItem "C:\","N:\" -Recurse -Filter "*.bak" -ErrorAction SilentlyContinue |
+# Find SQL backups
+Get-ChildItem "C:\","D:\" -Recurse -Filter "*.bak" -ErrorAction SilentlyContinue |
   Select-Object FullName, @{N="GB";E={[math]::Round($_.Length/1GB,2)}} |
   Sort-Object GB -Descending | Select-Object -First 20
 
-# Desativar hibernação
+# Disable hibernation
 powercfg -h off
 
-# Espaço livre atual
+# Current free space
 Get-PSDrive C | Select-Object Used, Free |
-  ForEach-Object { 
-    "Usado: $([math]::Round($_.Used/1GB,1)) GB | Livre: $([math]::Round($_.Free/1GB,1)) GB"
+  ForEach-Object {
+    "Used: $([math]::Round($_.Used/1GB,1)) GB | Free: $([math]::Round($_.Free/1GB,1)) GB"
   }
 ```
 
 ---
 
-## Notas de Contexto — Ambiente Seidor
+## Lessons Learned
 
-- **Usuário:** `C:\Users\Seidor`
-- **Disco principal:** C: (217 GB total)
-- **Disco secundário:** N: (918 GB, ~575 GB livres) — usar para backups e dados grandes
-- **SAP Business One:** instalado em `C:\Program Files\SAP`
-- **n8n:** self-hosted, dados em `C:\Users\Seidor\.n8n`
-- **SQL Server:** presente na máquina
-- **Chrome:** perfil pesado em `Profile 1` com IndexedDB do Clipchamp (cuidado)
+### PowerShell Script Encoding (May 2026)
 
-### Histórico de Limpezas
+**Problem identified:** Scripts with accents fail with parsing errors even when saved as UTF-8.
 
-**08/03/2026:** liberados ~44 GB (de 12,7 GB → 56,4 GB livres)
+**Root cause:** PowerShell on Windows has issues with UTF-8 when special characters appear in strings, especially on older versions.
 
-**18/05/2026:** liberados ~21 GB (de 14 GB → 35 GB livres)
-- Cache do Claude Desktop: 14.15 GB
-- npm-cache (usuário inativo): 6.89 GB
-- Temporários Windows: 5-10 GB
-- Cache navegadores (Chrome/Edge): 5-6 GB
-- Cache Google Drive: 78 MB
-- **Lição aprendida:** Scripts PowerShell devem ser gerados SEM acentos para evitar erros de parsing no Windows
-- **Adicionado à skill:** Seção completa sobre Google Drive (modo streaming, limpeza de cache, configuração)
+**Definitive solution:**
+1. **ALWAYS generate scripts without accents**
+2. Use only pure ASCII in comments and messages
+3. Variables and functions in English
+4. Straight quotes `""` instead of curly quotes `""`
 
----
+**Error example:**
+```powershell
+# Script with accents (FAILS)
+Write-Host "Automatic cleanup policy"  # OK
+Write-Host "Política de limpeza automática"  # ❌ Parsing error
 
-## Lições Aprendidas
-
-### Encoding de Scripts PowerShell (18/05/2026)
-
-**Problema identificado:** Scripts com acentos falham com erros de parsing mesmo quando salvos como UTF-8.
-
-**Causa raiz:** PowerShell no Windows tem problemas com UTF-8 quando há caracteres especiais nas strings, especialmente em versões mais antigas.
-
-**Solução definitiva:**
-1. **SEMPRE gerar scripts sem acentos**
-2. Usar apenas ASCII puro em comentários e mensagens
-3. Variáveis e funções em inglês
-4. Aspas retas `""` ao invés de curvas `""`
-
-**Exemplo do erro:**
-```
-# Script com acentos (FALHA)
-Write-Host "Política de limpeza automática"  # ❌ Erro de parsing
-
-# Script sem acentos (SUCESSO)
-Write-Host "Politica de limpeza automatica"  # ✅ Funciona
+# Script without accents (WORKS)
+Write-Host "Automatic cleanup policy"  # ✅ Works
 ```
 
-Esta é uma limitação conhecida do PowerShell em ambientes Windows pt-BR.
+This is a known limitation of PowerShell in Windows pt-BR environments.
+
+### Google Drive Streaming Mode (May 2026)
+
+**Discovery:** Even in streaming mode (files in cloud), Drive keeps 50-500 MB of local cache.
+
+**Solution:** Cache cleanup script that preserves streaming configuration — only removes Cache/, Temp/, Logs/ subfolders.
