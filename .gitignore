@@ -41,3 +41,7 @@ __pycache__/
 *.temp
 tmp/
 temp/
+
+# Local project brain (never publish)
+CLAUDE.md
+Versoes/
