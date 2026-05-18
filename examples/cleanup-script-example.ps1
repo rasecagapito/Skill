@@ -52,10 +52,10 @@ Write-Host ""
 # ============================================================================
 
 Write-Host "FASE 2: Removendo npm-cache de usuario inativo (~7 GB)" -ForegroundColor Yellow
-Write-Host "Caminho: C:\NOTE-AGA\Cesar Agapito\Pessoal\44-IA\npm-cache" -ForegroundColor Gray
+Write-Host "Caminho: C:\Users\OtherUser\.npm" -ForegroundColor Gray
 Write-Host ""
 
-$npmCache = "C:\NOTE-AGA\Cesar Agapito\Pessoal\44-IA\npm-cache"
+$npmCache = "C:\Users\OtherUser\.npm"
 if (Test-Path $npmCache) {
     Write-Host "  [1/2] Removendo npm-cache..." -ForegroundColor Cyan
     Remove-Item -Path $npmCache -Recurse -Force -ErrorAction SilentlyContinue

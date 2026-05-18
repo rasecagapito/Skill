@@ -189,7 +189,7 @@ git config user.email
 
 **Se não estiver configurado:**
 ```powershell
-git config user.name "Cesar Agapito"
+git config user.name "Seidor"
 git config user.email "seu-email@exemplo.com"
 ```
 
